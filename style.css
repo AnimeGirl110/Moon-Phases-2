@@ -30,26 +30,30 @@ body {
 .onEarthViewer {
   background-color: black;
   grid-area: onEarthViewer;
-  border:inset;
-  margin-left:0.25em;
-  margin-bottom:0.25em;
+  border: inset;
+  margin-left: 0.25em;
+  margin-bottom: 0.25em;
 }
 
 .offEarthViewer {
   background-color: black;
   grid-area: offEarthViewer;
-  border:inset;
-  margin-right:0.25em;
-  margin-bottom:0.25em;
+  border: inset;
+  margin-right: 0.25em;
+  margin-bottom: 0.25em;
 }
 
 .clock {
   background-color: white;
   grid-area: clock;
-  border:inset;
-  margin-left:0.25em;
+  border: inset;
+  margin-left: 0.25em;
 }
 
 .gridCell {
-  overflow:hidden;
+  overflow: hidden;
+}
+
+.hide {
+  display: none;
 }

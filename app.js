@@ -10,25 +10,33 @@ let days = 0;
 let earth = {
   angle: EARTH_ANGLE,
   radius: 0.04,
-  color: "#12c3de",
   orbitalR: 0.4,
   revSpeed: 360 / 365.25,
   pos: { x: undefined, y: undefined },
+  image: undefined,
+  halfdim: undefined,
+  dim: undefined,
 };
 
 let moon = {
   angle: MOON_ANGLE,
   radius: 0.015,
-  color: "#a39e8c",
   orbitalR: 0.1,
   revSpeed: 360 / 30,
   pos: { x: undefined, y: undefined },
+  image: undefined,
+  lightImage: undefined,
+  darkImage: undefined,
+  halfdim: undefined,
+  dim: undefined,
 };
 
 let sun = {
   pos: { x: undefined, y: undefined }, //to be set during resize; pos: pixels
   radius: 0.075, //radius:10% of minDimension (width/height)
-  color: "#ffec47",
+  image: undefined,
+  halfdim: undefined,
+  dim: undefined,
   //color
 };
 
@@ -42,6 +50,9 @@ function init() {
   clockCon = clockCanvas.getContext("2d");
   offEarthCon = offEarthCanvas.getContext("2d");
   onEarthCon = onEarthCanvas.getContext("2d");
+  earth.image = document.getElementById("earth");
+  moon.lightImage = document.getElementById("moon-light");
+  sun.image = document.getElementById("sun");
   window.onresize = resize;
   resize();
   requestAnimationFrame(animate);
@@ -66,6 +77,43 @@ function resizeOffEarth() {
   sun.pos.x = offEarthCanvas.width / 2;
   sun.pos.y = offEarthCanvas.height / 2;
   offEarthSize = Math.min(offEarthCanvas.width, offEarthCanvas.height);
+
+  sun.halfdim = sun.radius * offEarthSize;
+  sun.dim = sun.halfdim * 2;
+  earth.halfdim = earth.radius * offEarthSize;
+  earth.dim = earth.halfdim * 2;
+  moon.halfdim = moon.radius * offEarthSize;
+  moon.dim = moon.halfdim * 2;
+
+  moon.image = new OffscreenCanvas(moon.dim, moon.dim);
+  const mOffscreenContext = moon.image.getContext("2d");
+  mOffscreenContext.drawImage(
+    document.getElementById("moon-light"),
+    0,
+    0,
+    moon.dim,
+    moon.dim
+  );
+
+  sun.image = new OffscreenCanvas(sun.dim, sun.dim);
+  const sOffScreenContext = sun.image.getContext("2d");
+  sOffScreenContext.drawImage(
+    document.getElementById("sun"),
+    0,
+    0,
+    sun.dim,
+    sun.dim
+  );
+
+  earth.image = new OffscreenCanvas(earth.dim, earth.dim);
+  const eOffscreenContext = earth.image.getContext("2d");
+  eOffscreenContext.drawImage(
+    document.getElementById("earth"),
+    0,
+    0,
+    earth.dim,
+    earth.dim
+  );
 }
 
 function resizeOnEarth() {
@@ -126,26 +174,23 @@ function drawOffEarth() {
   let con = offEarthCon;
   let can = offEarthCanvas;
   con.clearRect(0, 0, can.width, can.height);
-  con.fillStyle = sun.color;
-  con.beginPath();
-  con.arc(sun.pos.x, sun.pos.y, sun.radius * offEarthSize, 0, Math.PI * 2);
-  con.fill();
+  con.translate(sun.pos.x, sun.pos.y);
+  con.drawImage(sun.image, -sun.halfdim, -sun.halfdim, sun.dim, sun.dim);
+  con.translate(-sun.pos.x, -sun.pos.y);
 
-  con.fillStyle = earth.color;
-  con.beginPath();
-  con.arc(
-    earth.pos.x,
-    earth.pos.y,
-    earth.radius * offEarthSize,
-    0,
-    Math.PI * 2
+  con.translate(earth.pos.x, earth.pos.y);
+  con.drawImage(
+    earth.image,
+    -earth.halfdim,
+    -earth.halfdim,
+    earth.dim,
+    earth.dim
   );
-  con.fill();
+  con.translate(-earth.pos.x, -earth.pos.y);
 
-  con.fillStyle = moon.color;
-  con.beginPath();
-  con.arc(moon.pos.x, moon.pos.y, moon.radius * offEarthSize, 0, Math.PI * 2);
-  con.fill();
+  con.translate(moon.pos.x, moon.pos.y);
+  con.drawImage(moon.image, -moon.halfdim, -moon.halfdim, moon.dim, moon.dim);
+  con.translate(-moon.pos.x, -moon.pos.y);
 }
 
 function drawOnEarth() {
